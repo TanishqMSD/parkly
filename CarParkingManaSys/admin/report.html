@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Entry - Car Parking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #1f2937;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #444;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        /* Dark mode adjustments */
+        .bg-gray-900 {
+            background-color: #111827;
+        }
+
+        .bg-gray-800 {
+            background-color: #1f2937;
+        }
+
+        .text-gray-600 {
+            color: #9ca3af;
+        }
+
+        .text-gray-400 {
+            color: #cbd5e1;
+        }
+
+        .text-white {
+            color: #ffffff;
+        }
+
+        .toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 9999px;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4ade80; /* Color when checked */
+        }
+
+        .toggle-ball {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-checkbox:checked + .toggle-label .toggle-ball {
+            transform: translateX(20px); /* Move the ball to the right when checked */
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900">
+    <header class="bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="home.html" class="text-2xl font-bold text-white">Parkly</a>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-gray-400 hover:text-white">Register</a></li>
+                    <li><a href="dashboard.php" class="text-gray-400 hover:text-white">Dashboard</a></li>
+                    <li><a href="slots.html" class="text-gray-400 hover:text-white">Slots</a></li>
+                    <li><a href="report.html" class="text-gray-400 hover:text-white">Reports</a></li>
+                    <div class="flex items-center">
+                        <span class="text-gray-400 mr-2">Dark Mode</span>
+                        <input type="checkbox" id="dark-toggle" class="toggle-checkbox hidden">
+                        <label for="dark-toggle" class="toggle-label">
+                            <span class="toggle-ball"></span>
+                        </label>
+                    </div>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold text-center mb-10 text-white">Parking Statistics</h2>
+
+        <!-- Statistics -->
+        <div class="mt-10 bg-gray-800 p-6 rounded shadow-md text-white">
+            <h3 class="text-lg font-bold">Parking Statistics</h3>
+            <p id="totalVehicles">Total Vehicles Parked: <span class="font-bold">0</span></p>
+            <p id="totalEarnings">Total Earnings: <span class="font-bold">₹0</span></p>
+        </div>
+
+        <!-- History Logs -->
+        <div class="mt-10">
+            <h3 class="text-lg font-bold text-white">History Logs</h3>
+            <div id="historyContainer" class="mt-4">
+                <button id="toggleHistory" class="bg-blue-600 text-white px-4 py-2 rounded">Show History</button>
+                <div id="history" class="hidden mt-2 bg-gray-800 p-4 rounded">
+                    <ul id="historyList" class="space-y-2">
+                        <!-- History items will be dynamically added here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="text-gray-400 float-right cursor-pointer">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-white">Parking Token</h2>
+            <p><strong class="text-gray-400">Token Number:</strong> <span id="tokenNumber" class="text-gray-200"></span></p>
+            <p><strong class="text-gray-400">Check-in Time:</strong> <span id="checkinTime" class="text-gray-200"></span></p>
+            <p><strong class="text-gray-400">Vehicle Number:</strong> <span id="vehicleNumber" class="text-gray-200"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('carEntryForm');
+        const modal = document.getElementById('confirmationModal');
+        const closeModal = document.getElementById('closeModal');
+        const tokenNumberSpan = document.getElementById('tokenNumber');
+        const checkinTimeSpan = document.getElementById('checkinTime');
+        const vehicleNumberSpan = document.getElementById('vehicleNumber');
+        const totalVehiclesSpan = document.getElementById('totalVehicles').querySelector('span');
+        const totalEarningsSpan = document.getElementById('totalEarnings').querySelector('span');
+        const historyContainer = document.getElementById('history');
+        const historyList = document.getElementById('historyList');
+        const toggleHistoryButton = document.getElementById('toggleHistory');
+
+        let totalVehicles = 0;
+        let totalEarnings = 0;
+        const historyData = [];
+
+        // Add car entry form listener
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const carNumber = document.getElementById('car-number').value;
+            const carName = document.getElementById('car-name').value;
+            const carType = document.getElementById('car-type').value;
+            const mobileNumber = document.getElementById('mobile-number').value;
+
+            const tokenNumber = Math.floor(Math.random() * 10000);
+            const checkinTime = new Date().toLocaleString();
+            const earnings = carType === '2' ? 20 : carType === '3' ? 30 : 50; // Example pricing
+            const historyEntry = `${checkinTime} - ${carNumber} (${carName})`;
+
+            // Update statistics
+            totalVehicles++;
+            totalEarnings += earnings;
+            totalVehiclesSpan.textContent = totalVehicles;
+            totalEarningsSpan.textContent = `₹${totalEarnings}`;
+
+            // Update history
+            historyData.push(historyEntry);
+            updateHistory();
+
+            // Show modal
+            tokenNumberSpan.textContent = tokenNumber;
+            checkinTimeSpan.textContent = checkinTime;
+            vehicleNumberSpan.textContent = carNumber;
+            modal.style.display = 'block';
+
+            // Reset form
+            form.reset();
+        });
+
+        // Close modal functionality
+        closeModal.onclick = () => {
+            modal.style.display = 'none';
+        };
+
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Toggle history visibility
+        toggleHistoryButton.addEventListener('click', () => {
+            historyContainer.classList.toggle('hidden');
+            toggleHistoryButton.textContent = historyContainer.classList.contains('hidden') ? 'Show History' : 'Hide History';
+        });
+
+        // Update history log
+        function updateHistory() {
+            historyList.innerHTML = '';
+            historyData.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = entry;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Dark mode toggle
+        const toggleCheckbox = document.getElementById('dark-toggle');
+        const htmlElement = document.documentElement;
+
+        // Check if the user has a saved theme preference in localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            htmlElement.classList.add(savedTheme);
+            toggleCheckbox.checked = savedTheme === 'dark'; // Set the checkbox state
+        }
+
+        // Listen for toggle changes
+        toggleCheckbox.addEventListener('change', () => {
+            if (toggleCheckbox.checked) {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark'); // Save dark mode preference
+            } else {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light'); // Save light mode preference
+            }
+        });
+    </script>
+</body>
+
+</html>

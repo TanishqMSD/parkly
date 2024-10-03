@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Parking System</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Additional dark mode styles */
+    .dark-mode {
+      background-color: #1a202c;
+      color: #e2e8f0;
+    }
+    .dark-mode header {
+      background-color: #2d3748;
+    }
+    .dark-mode footer {
+      background-color: #2d3748;
+    }
+    .dark-mode input,
+    .dark-mode button {
+      background-color: #4a5568;
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 transition-colors duration-300">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="#" class="text-2xl font-bold">Car Parking System</a>
+      <nav>
+        <ul class="flex space-x-6">
+          <li><a href="#" class="text-gray-600 hover:text-gray-900">Home</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-gray-900">About</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-gray-900">Services</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-gray-900">Pricing</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-gray-900">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <!-- Dark Mode Toggle -->
+        <button id="darkModeToggle" class="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow-md">
+          Toggle Dark Mode
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-cover bg-center h-screen text-white" style="background-image: url('parking-lot.jpg')">
+    <div class="container mx-auto px-4 flex items-center justify-center h-full">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold">Find a parking spot quickly and easily!</h1>
+        <p class="mt-4 text-lg">Book your parking in advance and avoid the hassle.</p>
+        <div class="mt-6">
+          <input type="text" placeholder="Enter location or parking ID" class="w-2/3 p-4 rounded shadow-md">
+          <button class="bg-blue-600 px-6 py-4 text-white rounded shadow-md">Search</button>
+        </div>
+        <button class="bg-green-500 mt-6 px-8 py-3 text-white rounded shadow-md">Book a Spot Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center">Our Features</h2>
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="text-center">
+          <img src="real-time-icon.png" alt="Real-time Availability" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">Real-time Availability</h3>
+          <p class="mt-2 text-gray-600">Check parking spot availability in real-time.</p>
+        </div>
+        <div class="text-center">
+          <img src="easy-booking-icon.png" alt="Easy Booking" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">Easy Booking</h3>
+          <p class="mt-2 text-gray-600">Book your parking spot online in a few clicks.</p>
+        </div>
+        <div class="text-center">
+          <img src="secure-payment-icon.png" alt="Secure Payments" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">Secure Payments</h3>
+          <p class="mt-2 text-gray-600">Pay securely through multiple payment options.</p>
+        </div>
+        <div class="text-center">
+          <img src="affordable-pricing-icon.png" alt="Affordable Pricing" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">Affordable Pricing</h3>
+          <p class="mt-2 text-gray-600">Get the best prices for parking spots near you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center">How It Works</h2>
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <img src="search-icon.png" alt="Search for a spot" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">1. Search for a spot</h3>
+          <p class="mt-2 text-gray-600">Enter your location and find nearby parking spots.</p>
+        </div>
+        <div class="text-center">
+          <img src="book-icon.png" alt="Book and pay" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">2. Book and pay online</h3>
+          <p class="mt-2 text-gray-600">Reserve your spot and complete your payment online.</p>
+        </div>
+        <div class="text-center">
+          <img src="park-icon.png" alt="Park easily" class="w-20 h-20 mx-auto">
+          <h3 class="mt-4 text-xl font-bold">3. Park easily and enjoy</h3>
+          <p class="mt-2 text-gray-600">Drive to the parking spot and park your vehicle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h3 class="font-bold text-xl">About Us</h3>
+          <p class="mt-2 text-gray-400">We are committed to providing the easiest way to find and book parking spots.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-xl">Quick Links</h3>
+          <ul class="mt-2">
+            <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white">About</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white">Services</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold text-xl">Contact Us</h3>
+          <p class="mt-2 text-gray-400">Email: support@carparkingsystem.com</p>
+          <p class="mt-2 text-gray-400">Phone: +123 456 7890</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript for Dark Mode Toggle -->
+  <script>
+    const toggleButton = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    toggleButton.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      if(body.classList.contains('dark-mode')) {
+        toggleButton.textContent = 'Toggle Light Mode';
+      } else {
+        toggleButton.textContent = 'Toggle Dark Mode';
+      }
+    });
+  </script>
+
+</body>
+</html>

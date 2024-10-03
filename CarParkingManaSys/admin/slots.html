@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Car Parking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for parking slots */
+        .slot {
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+            transition: transform 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .slot-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            color: #333;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .slot:hover {
+            transform: scale(1.05);
+        }
+        .slot-info {
+            transition: opacity 0.2s ease;
+        }
+        .slot p {
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 0;
+        }
+        .checkout-button {
+            display: none;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease;
+            margin-top: 5px;
+        }
+        .slot:hover .checkout-button {
+            display: block;
+        }
+        .slot:hover .slot-info {
+            opacity: 0;
+        }
+        .slot:hover .checkout-button {
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold">Parkly</a>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-gray-600 hover:text-gray-900">Register</a></li>
+                    <li><a href="dashboard.php" class="text-gray-600 hover:text-gray-900">Dashboard</a></li>
+                    <li><a href="slots.html" class="text-gray-600 hover:text-gray-900">Slots</a></li>
+                    <li><a href="report.php" class="text-gray-600 hover:text-gray-900">Reports</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold text-center mb-10">Parking Slots</h2>
+
+        <div id="parking-grid" class="grid grid-cols-5 gap-4 max-w-6xl mx-auto"></div>
+    </section>
+
+    <script>
+        async function loadParkingSlots() {
+            try {
+                const response = await fetch('getParkingSlots.php');
+                const parkingSlots = await response.json();
+                const parkingGrid = document.getElementById('parking-grid');
+                parkingGrid.innerHTML = '';
+        
+                // Initialize local storage parking slots
+                const localStorageSlots = Array(50).fill(null); // Assuming you have 50 slots
+        
+                parkingSlots.forEach(slot => {
+                    const slotDiv = document.createElement('div');
+                    slotDiv.className = `slot p-4 rounded shadow-md ${slot.isOccupied ? 'bg-red-500' : 'bg-green-500'}`;
+                    slotDiv.id = `slot${slot.slotID}`;
+                
+                    slotDiv.innerHTML = `<div class="slot-number">${slot.slotID}</div>`;
+                
+                    if (slot.isOccupied) {
+                        slotDiv.innerHTML += `
+                            <div class="slot-info">
+                                <p>${slot.vehicleNumber} <br> (Occupied)</p>
+                            </div>
+                            <button class="checkout-button" onclick="checkout(${slot.slotID-1})">Checkout</button>
+                        `;
+                
+                        // Populate local storage with the occupied slot information, including checkinTime
+                        localStorageSlots[slot.slotID - 1] = {
+                            vehicleNumber: slot.vehicleNumber,
+                            isOccupied: true,
+                            checkinTime: slot.checkinTime || new Date().toISOString() // Ensure checkinTime is present
+                        };
+                    } else {
+                        slotDiv.innerHTML += `<div class="slot-info"><p>Available</p></div>`;
+                        // Keep this slot as empty in local storage
+                        localStorageSlots[slot.slotID - 1] = null;
+                    }
+                
+                    parkingGrid.appendChild(slotDiv);
+                });
+                
+                localStorage.setItem('parkingSlots', JSON.stringify(localStorageSlots));
+                
+        
+            } catch (error) {
+                console.error('Error loading parking slots:', error);
+            }
+        }
+        
+
+        async function checkout(slotIndex) {
+            const parkingSlots = JSON.parse(localStorage.getItem('parkingSlots')) || [];
+        
+            // Log the parkingSlots array to check what's being retrieved
+            console.log('Parking Slots from localStorage:', parkingSlots);
+        
+            // Check if the slot is empty
+            if (!parkingSlots[slotIndex]) {
+                alert('Slot is already empty!');
+                return;
+            }
+        
+            const car = parkingSlots[slotIndex];
+        
+            if (!car.checkinTime) {
+                alert('Check-in time is missing. Cannot process checkout.');
+                return;
+            }
+        
+            const checkOutTime = new Date();
+            const checkOutTimeFormatted = checkOutTime.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+        
+            // Calculate total time parked
+            const parkedDuration = Math.max((checkOutTime - new Date(car.checkinTime)) / (1000 * 60 * 60), 1);
+            const ratePerHour = 20;
+            const totalAmount = Math.ceil(parkedDuration) * ratePerHour;
+        
+            // Proceed with checkout logic
+            try {
+                const response = await fetch("checkout.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        slotID: slotIndex+1,
+                        vehicleNumber: car.vehicleNumber,
+                        checkinTime: car.checkinTime,
+                        checkOutTime: checkOutTimeFormatted,
+                        totalAmount: totalAmount
+                    }),
+                });
+        
+                const result = await response.json();
+                if (result.success) {
+                    alert(`Receipt\n\nSlot Number: ${slotIndex + 1}\nVehicle Number: ${car.vehicleNumber}\nCheck-in Time: ${car.checkinTime}\nCheck-out Time: ${checkOutTimeFormatted}\nTotal Amount: ₹${totalAmount}`);
+                    loadParkingSlots(); // Reload parking slots
+                } else {
+                    alert('Error during checkout: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error during checkout:', error);
+                alert('An error occurred while processing your request. Please try again later.');
+            }
+        }
+        
+        
+        
+
+        document.addEventListener('DOMContentLoaded', loadParkingSlots);
+    </script>
+</body>
+</html>

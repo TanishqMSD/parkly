@@ -1,0 +1,78 @@
+<?php
+session_start();
+include 'db.php';
+
+// Ensure the user is logged in
+if (!isset($_SESSION['vehicle_number'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$vehicle_number = $_SESSION['vehicle_number'];
+
+// Fetch customer details
+$sql_customer = "SELECT * FROM parkinghistory WHERE vehicle_number = '$vehicle_number' ORDER BY checkin_time DESC LIMIT 1";
+$result_customer = $conn->query($sql_customer);
+$customer = $result_customer->fetch_assoc();
+
+// Fetch available slots
+$sql_slots = "SELECT * FROM parking_slots WHERE is_available = 1";
+$result_slots = $conn->query($sql_slots);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parking Availability</title>
+    <style>
+        table {
+            width: 50%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Customer Details</h2>
+<table>
+    <tr>
+        <th>Slot Number</th>
+        <th>Check-in Time</th>
+        <th>Check-out Time</th>
+        <th>Total Amount</th>
+    </tr>
+    <tr>
+        <td><?php echo $customer['slot_number']; ?></td>
+        <td><?php echo $customer['checkin_time']; ?></td>
+        <td><?php echo $customer['checkout_time']; ?></td>
+        <td><?php echo $customer['total_amount']; ?></td>
+    </tr>
+</table>
+
+<h2>Available Parking Slots</h2>
+
+<?php
+if ($result_slots->num_rows > 0) {
+    echo "<table><tr><th>Slot Number</th><th>Status</th></tr>";
+    while ($row = $result_slots->fetch_assoc()) {
+        echo "<tr><td>" . $row["slot_number"] . "</td><td>Available</td></tr>";
+    }
+    echo "</table>";
+} else {
+    echo "<p style='text-align:center;'>No available slots at the moment.</p>";
+}
+?>
+
+</body>
+</html>

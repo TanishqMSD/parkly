@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Entry - Car Parking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #1f2937;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #444;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .dark .bg-white {
+            background-color: #1f2937;
+        }
+
+        .dark .text-gray-600 {
+            color: #9ca3af;
+        }
+
+        .dark .text-gray-800 {
+            color: #d1d5db;
+        }
+
+        .dark .bg-gray-100 {
+            background-color: #111827;
+        }
+
+        .dark .bg-gray-50 {
+            background-color: #1f2937;
+        }
+
+        .dark .bg-blue-600 {
+            background-color: #2563eb;
+        }
+
+        .dark .border-gray-200 {
+            border-color: #374151;
+        }
+
+        .dark .hover\:bg-gray-100:hover {
+            background-color: #1f2937;
+        }
+
+        .dark .bg-gray-200 {
+            background-color: #374151;
+        }
+
+        .dark .hover\:bg-gray-100 {
+            background-color: #1f2937;
+        }
+
+        .toggle-checkbox:checked + .toggle-label .toggle-ball {
+            transform: translateX(100%);
+        }
+
+        .toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 9999px;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4ade80; /* Color when checked */
+        }
+
+        .toggle-ball {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+    </style>
+</head>
+
+<body class="bg-gray-900">
+    <header class="bg-white shadow-md dark:bg-gray-800">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="home.html" class="text-2xl font-bold dark:text-white">Parkly</a>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Register</a></li>
+                    <li><a href="dashboard.php" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Dashboard</a></li>
+                    <li><a href="slots.html" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Slots</a></li>
+                    <li><a href="report.php" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Reports</a></li>
+                    <div class="flex items-center">
+                        <span class="text-gray-600 dark:text-gray-300 mr-2">Dark Mode</span>
+                        <input type="checkbox" id="dark-toggle" class="toggle-checkbox hidden">
+                        <label for="dark-toggle" class="toggle-label">
+                            <span class="toggle-ball"></span>
+                        </label></div>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="container mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold text-center mb-10 text-white">Car Entry Form</h2>
+
+        <div class="bg-gray-800 p-8 rounded shadow-md max-w-lg mx-auto">
+            <form id="carEntryForm" class="space-y-6" method="POST" action="vehicledetails.php">
+                <div>
+                    <label for="vehicle_number" class="block text-sm font-medium text-gray-400">Vehicle Number</label>
+                    <input type="text" id="vehicle_number" name="vehicle_number" required placeholder="Enter vehical Number"
+                        class="mt-1 block w-full px-4 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="vehicle_name" class="block text-sm font-medium text-gray-400">Vehicle Name/Model</label>
+                    <input type="text" id="vehicle_name" name="vehicle_name" required placeholder="Enter vehical Name/Model"
+                        class="mt-1 block w-full px-4 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="vehicle_type" class="block text-sm font-medium text-gray-400">Vehicle Type (Wheeler)</label>
+                    <select id="vehicle_type" name="vehicle_type" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500">
+                        <option value="2">2-Wheeler</option>
+                        <option value="3">3-Wheeler</option>
+                        <option value="4">4-Wheeler</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="mobile_number" class="block text-sm font-medium text-gray-400">Mobile Number</label>
+                    <input type="tel" id="mobile_number" name="mobile_number" required placeholder="Enter Mobile Number" pattern="[0-9]{10}"
+                        class="mt-1 block w-full px-4 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded shadow-md hover:bg-blue-700">
+                        Submit Car Details
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="text-gray-500 float-right cursor-pointer">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-white">Parking Token</h2>
+            <p><strong>Token Number:</strong> <span id="tokenNumber"></span></p>
+            <p><strong>Check-in Time:</strong> <span id="checkinTime"></span></p>
+            <p><strong>Vehicle Number:</strong> <span id="vehicleNumber"></span></p>
+        </div>
+    </div>
+
+    <!-- <script>
+        const form = document.getElementById('carEntryForm');
+        const modal = document.getElementById('confirmationModal');
+        const closeModal = document.getElementById('closeModal');
+        const tokenNumberSpan = document.getElementById('tokenNumber');
+        const checkinTimeSpan = document.getElementById('checkinTime');
+        const vehicleNumberSpan = document.getElementById('vehicleNumber');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const carNumber = document.getElementById('car-number').value;
+            const carName = document.getElementById('car-name').value;
+            const carType = document.getElementById('car-type').value;
+            const mobileNumber = document.getElementById('mobile-number').value;
+            const checkinTime = new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'});
+
+            // Retrieve parking slots and car list from localStorage
+            let cars = JSON.parse(localStorage.getItem('cars')) || [];
+            let parkingSlots = JSON.parse(localStorage.getItem('parkingSlots')) || Array(20).fill(null);
+
+            // Find the next available parking slot
+            const availableSlot = parkingSlots.indexOf(null);
+
+            if (availableSlot !== -1) {
+                // Assign car to the available slot
+                const tokenNumber = 'T' + new Date().getTime();
+                parkingSlots[availableSlot] = {carNumber, carName, carType, mobileNumber, checkinTime, slot: availableSlot, tokenNumber};
+                cars.push(parkingSlots[availableSlot]);
+
+                // Store the updated data in localStorage
+                localStorage.setItem('cars', JSON.stringify(cars));
+                localStorage.setItem('parkingSlots', JSON.stringify(parkingSlots));
+
+                // Set modal content and display
+                tokenNumberSpan.textContent = tokenNumber;
+                checkinTimeSpan.textContent = checkinTime;
+                vehicleNumberSpan.textContent = carNumber;
+                modal.style.display = 'block';
+
+                // Redirect to dashboard after 7 seconds
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 7000);
+            } else {
+                alert('No parking slots available!');
+            }
+        });
+
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script> -->
+
+<script>
+    const toggleCheckbox = document.getElementById('dark-toggle');
+    const htmlElement = document.documentElement;
+
+    // Check if the user has a saved theme preference in localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        htmlElement.classList.add(savedTheme);
+        toggleCheckbox.checked = savedTheme === 'dark'; // Set the checkbox state
+    }
+
+    // Listen for toggle changes
+    toggleCheckbox.addEventListener('change', () => {
+        if (toggleCheckbox.checked) {
+            htmlElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark'); // Save dark mode preference
+        } else {
+            htmlElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light'); // Save light mode preference
+        }
+    });
+</script>
+</body>
+
+</html>
